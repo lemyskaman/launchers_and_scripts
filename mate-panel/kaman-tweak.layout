@@ -1,0 +1,137 @@
+[Toplevel top]
+orientation=right
+expand=true
+size=17
+
+[Toplevel bottom]
+orientation=bottom
+expand=true
+size=17
+
+[Object notificationarea]
+locked=true
+position=10
+panel-right-stick=true
+toplevel-id=top
+applet-iid=NotificationAreaAppletFactory::NotificationArea
+object-type=applet
+
+[Object clockapplet]
+locked=true
+position=0
+panel-right-stick=true
+toplevel-id=top
+applet-iid=ClockAppletFactory::ClockApplet
+object-type=applet
+
+[Object showdesktopapplet]
+locked=true
+position=0
+panel-right-stick=false
+toplevel-id=bottom
+applet-iid=WnckletFactory::ShowDesktopApplet
+object-type=applet
+
+[Object windowlistapplet]
+locked=true
+position=20
+panel-right-stick=false
+toplevel-id=bottom
+applet-iid=WnckletFactory::WindowListApplet
+object-type=applet
+
+[Object workspaceswitcherapplet]
+locked=true
+position=0
+panel-right-stick=true
+toplevel-id=bottom
+applet-iid=WnckletFactory::WorkspaceSwitcherApplet
+object-type=applet
+
+[Object launcher]
+locked=false
+position=120
+launcher-location=vbox_vm_toggle.sh.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object launcher]
+locked=false
+position=326
+launcher-location=numlock_toggle.sh.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object menu]
+locked=false
+position=0
+panel-right-stick=false
+toplevel-id=top
+object-type=menu
+
+[Object multiloadapplet]
+locked=false
+position=352
+panel-right-stick=false
+toplevel-id=top
+applet-iid=MultiLoadAppletFactory::MultiLoadApplet
+object-type=applet
+
+[Object launcher]
+locked=false
+position=187
+launcher-location=/home/kaman/.local/share/applications/netbeans-8.2.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object launcher]
+locked=false
+position=171
+launcher-location=/usr/share/applications/code.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object launcher]
+locked=false
+position=305
+launcher-location=/usr/share/applications/mate-network-properties.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object launcher]
+locked=false
+position=51
+launcher-location=/usr/share/applications/google-chrome.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object launcher]
+locked=false
+position=73
+launcher-location=/usr/share/applications/ryver.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
+[Object launcher]
+locked=false
+position=245
+launcher-location=/home/kaman/.local/share/applications/mozo-made-2.desktop
+panel-right-stick=false
+toplevel-id=top
+object-type=launcher
+menu-path=applications:/
+
