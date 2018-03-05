@@ -1,7 +1,9 @@
 #! /bin/sh
 #    by lemys lopez lemyskaman@gmail.com
 
+#
 
+#settign the param vars
 for i in "$@"
 do
 case $i in
@@ -35,40 +37,56 @@ case $i in
 esac
 done
 
-PASSWORD=$( zenity --password --title="$USER@$HOST ")
-echo $PASSWORD
-
-zenity --notification --text="atempting to mount on $MOUNT_POINT_DIR"
 
 
-mount () {
+#mount function 
+mount_remote () {
 
-echo $PASSWORD  | sshfs -p$PORT $USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
-MOUNT_STATUS=$?
 
-}
+
 
 if [ -d "$MOUNT_POINT_DIR" ]; 
 	then
- 		mount
-		if [ $MOUNT_STATUS -gt 0 ]
-			then 
-				zenity --error --text="ERROR MOUNTING ON $MOUNT_POINT_DIR" 
-			else
-				zenity --notification --text="SUCCESS MOUNT ON $MOUNT_POINT_DIR"
-		fi
+		PASSWORD=$( zenity --password --title="$USER@$HOST ")
+
+		zenity --notification --text="atempting to mount on $MOUNT_POINT_DIR"
+
+		echo $PASSWORD  | sshfs -p$PORT $USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
+		return $? 				
+		
 	else
-		zenity --error --text="CANT MOUNT ON $MOUNT_POINT_DIR directory does not exists"
+		zenity --error --text="Directory to mount does not exists please run: \n\nmkdir $MOUNT_POINT_DIR"
+		return 1
 		
 fi
 
+}
 
-#HOST=
-#PORT=2222
-#USER=kaman
-#PASS="128162(("
-#REMOTE_DIR=/
-#LOCAL_DIR="/kaman_host"
+explorer () {
+	caja $MOUNT_POINT_DIR
 
-#echo $PASS  |  sshfs -p$PORT $USER@$HOST:$REMOTE_DIR $LOCAL_DIR -o   password_stdin -o auto_unmount -o nonempty
+}
+
+mount | grep $MOUNT_POINT_DIR
+MOUNT_STATUS=$?
+if [ $MOUNT_STATUS -gt 0 ]
+	then 
+		mount_remote
+		if [ $? -gt 0 ]
+			then 
+				zenity --error --text="sshfs failed to mount at:\n$MOUNT_POINT_DIR "
+			else
+				zenity --notification --text="succes mount "
+				explorer
+		fi
+	else
+		explorer
+fi
+
+
+
+
+
+
+
 
