@@ -9,15 +9,17 @@ show_help(){
 	echo ""
 	echo "sshf_mount [ option=value ... ]"
 	echo ""
-	echo "all options are mandatory"
+	echo "all options with * are mandatory"
 	echo "Options:"
-	echo "    -h, --host        the sshf server ip to connect with"
-	echo "    -p, --port        the sshf server port "
-	echo "    -u, --u           server username"
-	echo "    -t, --target      path on the remote server to point to"
-	echo "    -m, --mount_point path on the local computer to mount the remote path  "
+	echo "    -h, --host        *the sshf server ip to connect with"
+	echo "    -p, --port        *the sshf server port "
+	echo "    -u, --u           *server username"
+	echo "    -P, --Password    the username password, if its null a propont with zenit will ask for"
+	echo "    -t, --target      *path on the remote server to point to"
+	echo "    -m, --mount_point *path on the local computer to mount the remote path  "
         echo "        --help        show this guide"
 	echo ""
+	echo "this script depends of: ssh sshfs zenity"
 	return 0
 }
 
