@@ -1,0 +1,137 @@
+#! /bin/bash
+#    by lemys lopez lemyskaman@gmail.com
+
+#
+
+
+show_help(){
+	echo ""
+	echo ""
+	echo "sshf_mount [ option=value ... ]"
+	echo ""
+	echo "all options are mandatory"
+	echo "Options:"
+	echo "    -h, --host        the sshf server ip to connect with"
+	echo "    -p, --port        the sshf server port "
+	echo "    -u, --u           server username"
+	echo "    -t, --target      path on the remote server to point to"
+	echo "    -m, --mount_point path on the local computer to mount the remote path  "
+        echo "        --help        show this guide"
+	echo ""
+	return 0
+}
+
+#settign the param vars
+for i in "$@"
+do
+case $i in
+    -help|--help)
+    show_help
+    return 0
+    shift # past argument=value
+    ;;
+    -h=*|--host=*)
+    HOST="${i#*=}"
+    shift # past arg
+    ;;
+    -P=*|--password=*)
+    PASSWORD="${i#*=}"
+    shift # past arg
+    ;;
+    -p=*|--port=*)
+    PORT="${i#*=}"
+    shift # past argument=value
+    ;;
+    -u=*|--user=*)
+    USER="${i#*=}"
+    shift # past argument=value
+    ;;
+	-t=*|--target=*)
+    TARGET_DIR="${i#*=}"
+    shift # past argument=value
+    ;;
+	-m=*|--mount_point=*)
+    MOUNT_POINT_DIR="${i#*=}"
+    shift # past argument=value
+    ;;
+    --default)
+    DEFAULT=YES
+    shift # past argument with no value
+    ;;
+    *)
+          # unknown option
+    ;;
+esac
+done
+
+
+
+#mount function 
+mount_remote () {
+
+
+
+
+if [ -d "$MOUNT_POINT_DIR" ]; 
+	then
+		if [ -z $PASSWORD ]; then
+			PASSWORD=$( zenity --password --title="$USER@$HOST ")
+		fi
+
+		zenity --notification --text="atempting to mount on $MOUNT_POINT_DIR"
+
+		echo $PASSWORD  | sshfs -p$PORT $USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
+		return $? 				
+		
+	else
+		zenity --error --text="Directory to mount does not exists please run: \n\nmkdir $MOUNT_POINT_DIR"
+		return 1
+		
+fi
+
+}
+
+explorer () {
+	if  hash konqueror 2>/dev/null; then
+		konqueror $MOUNT_POINT_DIR &
+		return 0
+	elif  hash caja 2>/dev/null; then
+		caja $MOUNT_POINT_DIR &
+		return 0
+	fi
+	return 1
+
+}
+
+
+if [ -z $HOST ] || [  -z $PORT ] || [  -z $USER ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ]; then
+	
+	show_help
+
+
+else
+mount | grep $MOUNT_POINT_DIR
+MOUNT_STATUS=$?
+if [ $MOUNT_STATUS -gt 0 ]
+	then 
+		mount_remote
+		if [ $? -gt 0 ]
+			then 
+				zenity --error --text="sshfs failed to mount at:\n$MOUNT_POINT_DIR "
+			else
+				explorer
+				zenity --info --text="succes mount "
+				
+		fi
+	else
+		echo "already mounted"
+		explorer
+fi
+fi
+
+
+
+
+
+
+
