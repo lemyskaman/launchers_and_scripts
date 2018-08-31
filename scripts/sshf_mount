@@ -13,7 +13,7 @@ show_help(){
 	echo "Options:"
 	echo "    -h, --host        *the sshf server ip to connect with"
 	echo "    -p, --port        *the sshf server port "
-	echo "    -u, --u           *server username"
+	echo "    -u, --u           server username"
 	echo "    -P, --Password    the username password, if its null a propont with zenit will ask for"
 	echo "    -t, --target      *path on the remote server to point to"
 	echo "    -m, --mount_point *path on the local computer to mount the remote path  "
@@ -45,7 +45,7 @@ case $i in
     shift # past argument=value
     ;;
     -u=*|--user=*)
-    USER="${i#*=}"
+    REMOTE_USER="${i#*=}"
     shift # past argument=value
     ;;
 	-t=*|--target=*)
@@ -76,13 +76,21 @@ mount_remote () {
 
 if [ -d "$MOUNT_POINT_DIR" ]; 
 	then
+		echo $REMOTE_USER
+		if [ -z $REMOTE_USER ]; then
+			OUTPUT=$(zenity --forms --title="Connecting to $HOST" --text="Enter Credentials" --separator="," --add-entry="Username" --add-password="Password" )
+
+			REMOTE_USER=$(awk -F, '{print $1}' <<<$OUTPUT)
+			PASSWORD=$(awk -F, '{print $2}' <<<$OUTPUT)
+		fi
+		
 		if [ -z $PASSWORD ]; then
-			PASSWORD=$( zenity --password --title="$USER@$HOST ")
+			PASSWORD=$( zenity --password --title="$REMOTE_USER@$HOST ")
 		fi
 
-		zenity --notification --text="atempting to mount on $MOUNT_POINT_DIR"
+		echo "atempting to mount on $MOUNT_POINT_DIR"
 
-		echo $PASSWORD  | sshfs -p$PORT $USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
+		echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
 		return $? 				
 		
 	else
@@ -106,7 +114,7 @@ explorer () {
 }
 
 
-if [ -z $HOST ] || [  -z $PORT ] || [  -z $USER ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ]; then
+if [ -z $HOST ] || [  -z $PORT ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ]; then
 	
 	show_help
 
