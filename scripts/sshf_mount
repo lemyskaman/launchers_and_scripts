@@ -89,7 +89,8 @@ if [ -d "$MOUNT_POINT_DIR" ];
 		fi
 
 		echo "atempting to mount on $MOUNT_POINT_DIR"
-		
+		#using this we can autoacept a public keygen but this a ugly way have to be fixed
+		ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
 		echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
 		return $? 				
 		
