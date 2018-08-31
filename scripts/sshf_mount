@@ -89,7 +89,7 @@ if [ -d "$MOUNT_POINT_DIR" ];
 		fi
 
 		echo "atempting to mount on $MOUNT_POINT_DIR"
-
+		echo $PASSWORD  |ssh -oStrictHostKeyChecking=no
 		echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
 		return $? 				
 		
@@ -108,6 +108,9 @@ explorer () {
 	elif  hash caja 2>/dev/null; then
 		caja $MOUNT_POINT_DIR &
 		return 0
+	elif  hash pcmanfm 2>/dev/null; then
+		pcmanfm $MOUNT_POINT_DIR &
+		return 0
 	fi
 	return 1
 
@@ -124,6 +127,7 @@ mount | grep $MOUNT_POINT_DIR
 MOUNT_STATUS=$?
 if [ $MOUNT_STATUS -gt 0 ]
 	then 
+		
 		mount_remote
 		if [ $? -gt 0 ]
 			then 
