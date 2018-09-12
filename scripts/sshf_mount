@@ -1,9 +1,6 @@
 #! /bin/bash
 #    by lemys lopez lemyskaman@gmail.com
 
-#
-
-
 show_help(){
 	echo ""
 	echo ""
@@ -68,13 +65,13 @@ done
 
 
 
-#mount function 
+#mount function
 mount_remote () {
 
 
 
 
-if [ -d "$MOUNT_POINT_DIR" ]; 
+if [ -d "$MOUNT_POINT_DIR" ];
 	then
 		echo $REMOTE_USER
 		if [ -z $REMOTE_USER ]; then
@@ -83,26 +80,34 @@ if [ -d "$MOUNT_POINT_DIR" ];
 			REMOTE_USER=$(awk -F, '{print $1}' <<<$OUTPUT)
 			PASSWORD=$(awk -F, '{print $2}' <<<$OUTPUT)
 		fi
-		
+
 		if [ -z $PASSWORD ]; then
 			PASSWORD=$( zenity --password --title="$REMOTE_USER@$HOST ")
 		fi
 
 		echo "atempting to mount on $MOUNT_POINT_DIR"
-		#using this we can autoacept a public keygen but this a ugly way have to be fixed
-		ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
-		echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty 
-		return $? 				
-		
+
+		#check if the host is already on know_host
+        ssh-keygen -F $HOST
+        if [ $? -gt 0 ];then
+            echo "First time connecting to server, adding the keys to known_hosts file"
+            ssh-keyscan -H $HOST >> ~/.ssh/known_hosts
+        fi
+
+        #mounting remote dir
+		echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty
+		return $?
+
 	else
 		zenity --error --text="Directory to mount does not exists please run: \n\nmkdir $MOUNT_POINT_DIR"
 		return 1
-		
+
 fi
 
 }
 
 explorer () {
+    #checking for installed file explorer
 	if  hash konqueror 2>/dev/null; then
 		konqueror $MOUNT_POINT_DIR &
 		return 0
@@ -119,7 +124,7 @@ explorer () {
 
 
 if [ -z $HOST ] || [  -z $PORT ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ]; then
-	
+
 	show_help
 
 
@@ -127,20 +132,23 @@ else
 mount | grep $MOUNT_POINT_DIR
 MOUNT_STATUS=$?
 if [ $MOUNT_STATUS -gt 0 ]
-	then 
-		
+	then
+
 		mount_remote
 		if [ $? -gt 0 ]
-			then 
-				zenity --error --text="sshfs failed to mount at:\n$MOUNT_POINT_DIR "
+			then
+				zenity --error --text="sshfs failed to mount on: \n$MOUNT_POINT_DIR "
+                exit 1
 			else
 				explorer
-				zenity --info --text="succes mount "
-				
+				#zenity --info --text="succes mount on: \n$MOUNT_POINT_DIR"
+				exit 0
 		fi
 	else
-		echo "already mounted"
+        echo ""
+		echo "Remote directory already mounted"
 		explorer
+		exit 0
 fi
 fi
 
