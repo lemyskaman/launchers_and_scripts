@@ -6,15 +6,17 @@ show_help(){
 	echo ""
 	echo "sshf_mount [ option=value ... ]"
 	echo ""
-	echo "all options with * are mandatory"
+	echo "all param on with * are mandatory"
 	echo "Options:"
-	echo "    -h, --host        *the sshf server ip to connect with"
-	echo "    -p, --port        *the sshf server port "
-	echo "    -u, --u           server username"
-	echo "    -P, --Password    the username password, if its null a propont with zenit will ask for"
-	echo "    -t, --target      *path on the remote server to point to"
-	echo "    -m, --mount_point *path on the local computer to mount the remote path  "
-        echo "        --help        show this guide"
+	echo " -h, --host                *the sshf server ip to connect with"
+	echo " -p, --port                *the sshf server port "
+	echo " -u, --u                    server username"
+	echo " -P, --Password             the username password, if its null a propont with zenit will ask for"
+	echo " -t, --target              *path on the remote server to point to"
+	echo " -m, --mount_point         *path on the local computer to mount the remote path  "
+    echo " -S, --full_params_string   All params in one string using the format:"
+    echo "                 [user]:[password]@[host]:[port]:[target] [mount_point]"
+    echo "        --help        show this guide"
 	echo ""
 	echo "this script depends of: ssh sshfs zenity"
 	return 0
@@ -53,6 +55,10 @@ case $i in
     MOUNT_POINT_DIR="${i#*=}"
     shift # past argument=value
     ;;
+    -S=*|--full_params_string=*)
+    FULL_PARAMS_STRING="${i#*=}"
+    shift # past argument=value
+    ;;
     --default)
     DEFAULT=YES
     shift # past argument with no value
@@ -65,29 +71,74 @@ done
 
 
 
+fill_params_from_string (){
+
+
+    #[user]:[password]@[host]:[port]:[target] [mount_point]
+    IFS=' ' read -ra ITEMS <<< "$FULL_PARAMS_STRING"
+    MOUNT_POINT_DIR="${ITEMS[1]}"
+    remote_params_string="${ITEMS[0]}"
+
+    IFS='@' read -ra ITEMS <<< "$remote_params_string"
+    remote_credentials_string="${ITEMS[0]}"
+    remote_host_port_target_string="${ITEMS[1]}"
+
+    IFS=':' read -ra ITEMS <<< "$remote_credentials_string"
+    REMOTE_USER="${ITEMS[0]}"
+    PASSWORD="${ITEMS[1]}"
+
+    IFS=':' read -ra ITEMS <<< "$remote_host_port_target_string"
+    HOST="${ITEMS[0]}"
+    PORT="${ITEMS[1]}"
+    TARGET_DIR="${ITEMS[2]}"
+
+    return 1
+}
+
+
+#useful to heck if a password exit other wise propont
+user_and_password_check () {
+    echo $REMOTE_USER
+    to_return=0
+    #does we not have a user to connect on remote ?
+    if [ -z $REMOTE_USER ]; then
+        #we propont a gui box to imput user a password
+        OUTPUT=$(zenity --forms --title="Connecting to $HOST" --text="Enter Credentials" --separator="," --add-entry="Username" --add-password="Password" )
+        to_return=$?
+
+        #if enduser click acept
+        if [ $to_return -eq 0 ]; then
+            REMOTE_USER=$(awk -F, '{print $1}' <<<$OUTPUT)
+            PASSWORD=$(awk -F, '{print $2}' <<<$OUTPUT)
+        fi
+    fi
+    if [ -z $PASSWORD ]; then
+    #does we not have a password but we got a user on shell script params
+
+            #propont a gui input bux to retrive a password
+        PASSWORD=$( zenity --password --title="$REMOTE_USER@$HOST ")
+        to_return=$?
+
+
+    fi
+    if [ $to_return -gt 0 ]; then
+        message="Unable to get a user and password to connect to remote instance"
+        echo $message
+        zenity --error --text="$message"
+    fi
+
+    return $to_return
+
+}
+
+
 #mount function
 mount_remote () {
-
-
-
-
-if [ -d "$MOUNT_POINT_DIR" ];
-	then
-		echo $REMOTE_USER
-		if [ -z $REMOTE_USER ]; then
-			OUTPUT=$(zenity --forms --title="Connecting to $HOST" --text="Enter Credentials" --separator="," --add-entry="Username" --add-password="Password" )
-
-			REMOTE_USER=$(awk -F, '{print $1}' <<<$OUTPUT)
-			PASSWORD=$(awk -F, '{print $2}' <<<$OUTPUT)
-		fi
-
-		if [ -z $PASSWORD ]; then
-			PASSWORD=$( zenity --password --title="$REMOTE_USER@$HOST ")
-		fi
-
-		echo "atempting to mount on $MOUNT_POINT_DIR"
-
-		#check if the host is already on know_host
+    to_return=1
+    #check for directory to mount
+    if [ -d "$MOUNT_POINT_DIR" ];then
+        echo "atempting to mount on $MOUNT_POINT_DIR"
+	    #check if the host is already on know_host
         ssh-keygen -F $HOST
         if [ $? -gt 0 ];then
             echo "First time connecting to server, adding the keys to known_hosts file"
@@ -95,14 +146,22 @@ if [ -d "$MOUNT_POINT_DIR" ];
         fi
 
         #mounting remote dir
-		echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty
-		return $?
+        echo $PASSWORD  | sshfs -p$PORT $REMOTE_USER@$HOST:$TARGET_DIR $MOUNT_POINT_DIR -o   password_stdin -o auto_unmount -o nonempty
+        to_return=$?
+        if [ $to_return -gt 0 ];then
+            message="sshfs failed to mount on: \n$MOUNT_POINT_DIR "
+            echo $message
+            zenity --error --text="$message"
+        fi
 
-	else
-		zenity --error --text="Directory to mount does not exists please run: \n\nmkdir $MOUNT_POINT_DIR"
-		return 1
+    else
+        message="Directory to mount does not exists please run: \n\nmkdir $MOUNT_POINT_DIR"
+        echo $message
+        zenity --error --text="$message"
+    fi
 
-fi
+
+    return $to_return
 
 }
 
@@ -123,35 +182,45 @@ explorer () {
 }
 
 
-if [ -z $HOST ] || [  -z $PORT ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ]; then
+if [[ ! -z $FULL_PARAMS_STRING ]];then
+    echo "hay param string"
+    fill_params_from_string
+fi
 
+
+if [ -z $HOST ] || [  -z $PORT ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ] ; then
 	show_help
-
-
 else
-mount | grep $MOUNT_POINT_DIR
-MOUNT_STATUS=$?
-if [ $MOUNT_STATUS -gt 0 ]
-	then
+    mount | grep $MOUNT_POINT_DIR
+    MOUNT_STATUS=$?
+    if [ $MOUNT_STATUS -gt 0 ];then
+        user_and_password_check
+        echo $REMOTE_USER
+        echo $PASSWORD
+        echo $HOST
+        echo $PORT
+        echo $MOUNT_POINT_DIR
+        echo $TARGET_DIR
 
-		mount_remote
-		if [ $? -gt 0 ]
-			then
-				zenity --error --text="sshfs failed to mount on: \n$MOUNT_POINT_DIR "
-                exit 1
-			else
-				explorer
-				#zenity --info --text="succes mount on: \n$MOUNT_POINT_DIR"
-				exit 0
-		fi
-	else
+		if [ $? -eq 0 ];then
+            mount_remote
+		    if [ $? -eq 0 ];then
+			    explorer
+                message="succes mount on: \n$MOUNT_POINT_DIR"
+                echo $message
+			    #zenity --info --text="succes mount on: \n$MOUNT_POINT_DIR"
+			    exit 0
+            fi
+	    fi
+    else
+        message="remote directory: \n$TARGET_DIR \nalready mounted on: \n$MOUNT_POINT_DIR"
         echo ""
-		echo "Remote directory already mounted"
+        echo $message
+        zenity --info --text="$message"
 		explorer
 		exit 0
+    fi
 fi
-fi
-
 
 
 
