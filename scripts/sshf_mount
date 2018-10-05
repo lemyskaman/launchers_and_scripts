@@ -6,19 +6,51 @@ show_help(){
 	echo ""
 	echo "sshf_mount [ option=value ... ]"
 	echo ""
-	echo "all param on with * are mandatory"
+	echo "all param with (*) are mandatory"
 	echo "Options:"
-	echo " -h, --host                *the sshf server ip to connect with"
-	echo " -p, --port                *the sshf server port "
-	echo " -u, --u                    server username"
-	echo " -P, --Password             the username password, if its null a propont with zenit will ask for"
-	echo " -t, --target              *path on the remote server to point to"
-	echo " -m, --mount_point         *path on the local computer to mount the remote path  "
-    echo " -S, --full_params_string   All params in one string using the format:"
-    echo "                 [user]:[password]@[host]:[port]:[target] [mount_point]"
-    echo "        --help        show this guide"
+	echo " -h,   --host                *The sshf server ip or hostname"
+    echo "                             to connect with."
 	echo ""
-	echo "this script depends of: ssh sshfs zenity"
+    echo " -p,   --port                *The sshf server port."
+	echo ""
+    echo " -u,   --u                    Server username, consider that"
+    echo "                             if its null a username/password"
+    echo "                             question will be prompt."
+	echo ""
+    echo " -P,   --Password             Username's password, consider "
+    echo "                             that if its null only a password"
+    echo "                             question will be prompt."
+	echo ""
+    echo " -t,  --target               *Path on the remote server to"
+    echo "                             to use as initial route."
+	echo ""
+    echo " -m,  --mount_point          *Path on the local computer to "
+    echo "                             mount the remote path."
+    echo ""
+    echo " -S,  --full_params_string    All params in one string using"
+    echo "                             the next format:"
+    echo "     [user]:[password]@[host]:[port]:[target] [mount_point]"
+    echo ""
+    echo " -Sf, --S_string_file         A text file with a list of     "
+    echo "                             conection params using the above"
+    echo "                             params format."
+    echo "                             If used this option will display"
+    echo "                             a integer indexed list of"
+    echo "                             posible conections acording the"
+    echo "                             ones in the file, asking for "
+    echo "                             one to be used."
+    echo "                             This option can also be used "
+    echo "                             with the one below, to pre selec"
+    echo "                             a conection params string."
+    echo ""
+    echo " -Sfo,--default_connection    Pre selected value to use just"
+    echo "                             after an option that display"
+    echo "                             a list and ask for a value"
+    echo "                             (like the above option)."
+    echo ""
+    echo "      --help                 Will show this guide"
+	echo ""
+	echo "this script depends of: ssh sshfs and zenity to gui display"
 	return 0
 }
 
@@ -59,6 +91,14 @@ case $i in
     FULL_PARAMS_STRING="${i#*=}"
     shift # past argument=value
     ;;
+    -Sf=*|--S_string_file=*)
+    CONECTIONS_FILE_PATH="${i#*=}"
+    shift # past argument=value
+    ;;
+    -Sfo=*|--default_connection=*)
+    SELECTED_CONNECTION="${i#*=}"
+    shift # past argument=value
+    ;;
     --default)
     DEFAULT=YES
     shift # past argument with no value
@@ -71,28 +111,55 @@ done
 
 
 
-fill_params_from_string (){
+
+# param $1 remote conection params strings
+# param $2 mount point dir
+split_params_from_full_string (){
+
+
 
 
     #[user]:[password]@[host]:[port]:[target] [mount_point]
-    IFS=' ' read -ra ITEMS <<< "$FULL_PARAMS_STRING"
-    MOUNT_POINT_DIR="${ITEMS[1]}"
-    remote_params_string="${ITEMS[0]}"
+    #IFS=' ' read -ra ITEMS <<< "$1"
+    #s_MOUNT_POINT_DIR="${ITEMS[1]}"
+    #remote_params_string="${ITEMS[0]}"
+
+    remote_params_string=$1
+    s_MOUNT_POINT_DIR=$2
+
+    echo $s_MOUNT_POINT_DIR
+    echo $remote_params_string
 
     IFS='@' read -ra ITEMS <<< "$remote_params_string"
     remote_credentials_string="${ITEMS[0]}"
     remote_host_port_target_string="${ITEMS[1]}"
 
     IFS=':' read -ra ITEMS <<< "$remote_credentials_string"
-    REMOTE_USER="${ITEMS[0]}"
-    PASSWORD="${ITEMS[1]}"
+    s_REMOTE_USER="${ITEMS[0]}"
+    s_PASSWORD="${ITEMS[1]}"
 
     IFS=':' read -ra ITEMS <<< "$remote_host_port_target_string"
-    HOST="${ITEMS[0]}"
-    PORT="${ITEMS[1]}"
-    TARGET_DIR="${ITEMS[2]}"
+    s_HOST="${ITEMS[0]}"
+    s_PORT="${ITEMS[1]}"
+    s_TARGET_DIR="${ITEMS[2]}"
 
     return 1
+
+}
+
+set_params_from_splitted(){
+
+
+
+    MOUNT_POINT_DIR=$s_MOUNT_POINT_DIR
+    REMOTE_USER=$s_REMOTE_USER
+    PASSWORD=$s_PASSWORD
+    HOST=$s_HOST
+    PORT=$s_PORT
+    TARGET_DIR=$s_TARGET_DIR
+
+
+
 }
 
 
@@ -181,11 +248,66 @@ explorer () {
 
 }
 
+# param $1 the file path
+show_conections_list_from_file(){
+
+    echo "Please select an option for a conection"
+    echo ""
+
+    OPTION=1
+    while IFS= read line
+    do
+        split_params_from_full_string $line
+        echo "$OPTION) $s_HOST:$s_PORT$s_TARGET_DIR <-- $s_MOUNT_POINT_DIR  "
+        OPTION=$((OPTION+1))
+    done <"$1"
+    read -p 'Option: ' SELECTED_CONNECTION
+
+}
+
+# param $1 the file to read
+# param $2 the option to select
+set_string_from_conections_file(){
+
+    OPTION=1
+    while IFS= read line
+    do
+        echo "$line"
+
+        if [ $OPTION -eq $2 ];then
+            FULL_PARAMS_STRING="$line"
+            break
+        fi
+
+        OPTION=$((OPTION+1))
+    done <"$1"
+
+
+
+}
+
+
+
+if [[ ! -z $CONECTIONS_FILE_PATH ]];then
+
+    echo "You have chose to use params from a conection file "
+    if [[  -z $SELECTED_CONNECTION ]];then
+
+        show_conections_list_from_file $CONECTIONS_FILE_PATH
+    fi
+    set_string_from_conections_file $CONECTIONS_FILE_PATH $SELECTED_CONNECTION
+fi
+
+
 
 if [[ ! -z $FULL_PARAMS_STRING ]];then
-    echo "hay param string"
-    fill_params_from_string
+    echo "hay string param"
+    split_params_from_full_string $FULL_PARAMS_STRING
+    set_params_from_splitted
 fi
+
+
+
 
 
 if [ -z $HOST ] || [  -z $PORT ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ] ; then
@@ -194,13 +316,14 @@ else
     mount | grep $MOUNT_POINT_DIR
     MOUNT_STATUS=$?
     if [ $MOUNT_STATUS -gt 0 ];then
-        user_and_password_check
+
         echo $REMOTE_USER
         echo $PASSWORD
         echo $HOST
         echo $PORT
         echo $MOUNT_POINT_DIR
         echo $TARGET_DIR
+        user_and_password_check
 
 		if [ $? -eq 0 ];then
             mount_remote
@@ -221,9 +344,3 @@ else
 		exit 0
     fi
 fi
-
-
-
-
-
-
