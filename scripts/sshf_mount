@@ -311,7 +311,12 @@ fi
 
 
 if [ -z $HOST ] || [  -z $PORT ] || [  -z $TARGET_DIR ] || [   -z $MOUNT_POINT_DIR ] ; then
-	show_help
+	echo "mandatory params are nedded"
+    echo "host $HOST"
+    echo "port $PORT"
+    echo "target dir $TARGET_DIR"
+    echo "mount_oint_dir $MOUNT_POINT_DIR"
+    show_help
 else
     mount | grep $MOUNT_POINT_DIR
     MOUNT_STATUS=$?
@@ -332,15 +337,15 @@ else
                 message="succes mount on: \n$MOUNT_POINT_DIR"
                 echo $message
 			    #zenity --info --text="succes mount on: \n$MOUNT_POINT_DIR"
-			    exit 0
+			    #exit 0
             fi
 	    fi
     else
         message="remote directory: \n$TARGET_DIR \nalready mounted on: \n$MOUNT_POINT_DIR"
         echo ""
         echo $message
-        zenity --info --text="$message"
-		explorer
-		exit 0
+        #zenity --info --text="$message"
+		#explorer
+		#xit 0
     fi
 fi
