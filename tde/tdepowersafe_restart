@@ -1,0 +1,16 @@
+#!/bin/bash
+# ugly way to solve an easy problem but was the fasted i found as im using q4os and my tdepowersafe app dosent detect power source changes
+# Author: lemyskaman@gmail.com
+
+
+acpi_listen | while IFS= read -r line;
+do
+    if [ "$line" = "button/lid LID open" ]
+    then
+       beep
+    elif [ "$line" = "battery PNP0C0A:00 00000081 00000001" ]
+    then
+       killall tdepowersave
+       tdepowersave
+    fi
+done
