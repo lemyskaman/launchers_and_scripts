@@ -1,0 +1,38 @@
+#! /bin/bash 
+
+
+echo  "This will install suny repo (for debian 10) for multiple php versions"
+
+
+
+read -p "Are you sure to continue? [Y/n] " -n 1 -r
+
+
+echo ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+
+
+echo "Install needed packages"
+sudo apt install -y curl wget gnupg2 ca-certificates lsb-release apt-transport-https
+
+
+echo "Download and instal gpg repo key."
+wget https://packages.sury.org/php/apt.gpg
+sudo apt-key add apt.gpg
+
+
+
+echo "Adding the SURY repository to your system."
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php7.list
+
+
+
+echo "Update the repository index."
+sudo apt update
+
+fi
+
+
+
+
