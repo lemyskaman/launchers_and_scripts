@@ -1,6 +1,13 @@
 #! /bin/bash
 
 PHP_VERSION=$1
+
+if [ -z "$PHP_VERSION" ] 
+then
+echo "please pass as param the wanted php version number"
+exit 1
+fi
+
 echo  "installing php version:"
 echo $PHP_VERSION
 
