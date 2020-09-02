@@ -1,0 +1,5 @@
+#! bin/bash 
+
+echo tifm_sd >> /etc/modules
+echo mmc_block >> /etc/modules   
+reboot
