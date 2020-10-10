@@ -3,6 +3,7 @@
 PHP_VERSION=7.4
 PHP_PATH=/etc/php/$PHP_VERSION/fpm
 
+PHP_INI_ORIGINAL=$PHP_PATH/php.ini.original 
 PHP_INI_FILE=$PHP_PATH/php.ini
 PHP_INI_TEMP_FILE=$PHP_PATH/php.ini.temp
 
@@ -10,19 +11,21 @@ ZEND_EXTENSION_PATH=/usr/lib/php/20190902/xdebug.so
 STATUS=0
 
 
-sed '/xdebug/d' $PHP_INI_FILE > $PHP_INI_TEMP_FILE
+
+sudo sed '/xdebug/d' $PHP_INI_ORIGINAL > $PHP_INI_TEMP_FILE
 
 if [ "$1" = "on" ]; then 
     STATUS=1
 fi
 
-echo "[xdebug]">> $PHP_INI_TEMP_FILE
-echo "zend_extension = $ZEND_EXTENSION_PATH">> $PHP_INI_TEMP_FILE
-echo "xdebug.remote_enable = $STATUS">> $PHP_INI_TEMP_FILE
-echo "xdebug.remote_autostart = $STATUS">> $PHP_INI_TEMP_FILE
-echo "xdebug.remote_autostart = $STATUS">> $PHP_INI_TEMP_FILE
+sudo echo "[xdebug]">> $PHP_INI_TEMP_FILE
+sudo echo "zend_extension = $ZEND_EXTENSION_PATH">> $PHP_INI_TEMP_FILE
+sudo echo "xdebug.remote_enable = $STATUS">> $PHP_INI_TEMP_FILE
+sudo echo "xdebug.remote_autostart = $STATUS">> $PHP_INI_TEMP_FILE
+sudo echo "xdebug.remote_autostart = $STATUS">> $PHP_INI_TEMP_FILE
 
-rm -f $PHP_INI_FILE
-mv -f $PHP_INI_TEMP_FILE $PHP_INI_FILE 
+sudo rm -f $PHP_INI_FILE
+sudo mv -f $PHP_INI_TEMP_FILE $PHP_INI_FILE 
 
 systemctl restart php$PHP_VERSION-fpm
+
