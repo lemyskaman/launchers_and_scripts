@@ -18,5 +18,5 @@ read -p "Are you sure? [Y/n] " -n 1 -r
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-sudo apt install  php$PHP_VERSION-{fpm,sqlite,mysql,xml,xmlrpc,curl,gd,imagick,cli,dev,imap,mbstring,opcache,soap,zip,intl,bcmath,bz2} php$PHP_VERSION -y
+sudo apt install  php$PHP_VERSION-{fpm,sqlite,mysql,xml,xmlrpc,curl,gd,imagick,cli,dev,imap,mbstring,opcache,soap,zip,intl,bcmath,bz2,xdebug} php$PHP_VERSION -y
 fi
