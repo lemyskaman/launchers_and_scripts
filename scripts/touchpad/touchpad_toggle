@@ -1,0 +1,15 @@
+#! /bin/bash 
+
+
+
+TOUCHPAD_STATUS=$(synclient | grep TouchpadOff | cut -d "=" -f2)
+
+if [ $TOUCHPAD_STATUS -eq 1 ] 
+then 
+	synclient TouchpadOff=0
+fi
+if [ $TOUCHPAD_STATUS -eq 0 ] 
+then 
+	synclient TouchpadOff=1
+fi
+
