@@ -22,6 +22,11 @@ echo ""
 echo "Copiying a new boilerplate for klorchid"
 cp -a $SOURCE_PATH/.  $TARGET_PATH/
 
-
-
 shopt -u extglob
+
+echo "composer update is needed and will be runned"
+cd $TARGET_PATH
+composer update 
+
+cd -
+echo "Done!"
