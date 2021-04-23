@@ -1,0 +1,27 @@
+#!/bin/bash
+#by lemys lopez lemyskaman@gmail.com
+
+#the path to get the orchid base stubs for copiying
+SOURCE_PATH="$(dirname $(readlink -f $0))/orchid_clean"
+TARGET_PATH=$1
+
+if [ -z "$TARGET_PATH" ] 
+then
+TARGET_PATH=.
+fi
+
+
+
+shopt -s extglob
+
+echo "I am in $(cd -P "$symlinkdir" && pwd)"
+echo "Deleting current target path files "
+rm -r -f -v !(".git"|".env"|".gitignore"|.|..)
+echo "$TARGET_PATH files deleted "
+echo ""
+echo "Copiying a new boilerplate for klorchid"
+cp -a $SOURCE_PATH/.  $TARGET_PATH/
+
+
+
+shopt -u extglob
