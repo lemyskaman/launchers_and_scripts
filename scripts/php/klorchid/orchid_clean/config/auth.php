@@ -68,7 +68,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => Kamansoft\Klorchid\Models\KlorchidUserModel::class,
         ],
 
         // 'users' => [

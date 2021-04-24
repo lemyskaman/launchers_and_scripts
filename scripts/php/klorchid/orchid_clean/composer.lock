@@ -1514,12 +1514,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kamansoft/klorchid.git",
-                "reference": "edeabc9c3a1d7c3362ac393f9f32c235c83d7726"
+                "reference": "86f75b8724adb06b1f3d5b63726d282fe07018cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kamansoft/klorchid/zipball/edeabc9c3a1d7c3362ac393f9f32c235c83d7726",
-                "reference": "edeabc9c3a1d7c3362ac393f9f32c235c83d7726",
+                "url": "https://api.github.com/repos/kamansoft/klorchid/zipball/86f75b8724adb06b1f3d5b63726d282fe07018cd",
+                "reference": "86f75b8724adb06b1f3d5b63726d282fe07018cd",
                 "shasum": ""
             },
             "require": {
@@ -1561,7 +1561,7 @@
                 "issues": "https://github.com/kamansoft/klorchid/issues",
                 "source": "https://github.com/kamansoft/klorchid/tree/lemys_dev"
             },
-            "time": "2021-04-18T23:22:23+00:00"
+            "time": "2021-04-24T09:22:08+00:00"
         },
         {
             "name": "laravel-lang/lang",
@@ -2977,16 +2977,16 @@
         },
         {
             "name": "orchid/platform",
-            "version": "10.1.2",
+            "version": "10.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchidsoftware/platform.git",
-                "reference": "5fef0e967d3118d396d7487f1b6c0b07b6f9a23e"
+                "reference": "fec4a00b18eeda841c2912b6a84b62b9621889a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchidsoftware/platform/zipball/5fef0e967d3118d396d7487f1b6c0b07b6f9a23e",
-                "reference": "5fef0e967d3118d396d7487f1b6c0b07b6f9a23e",
+                "url": "https://api.github.com/repos/orchidsoftware/platform/zipball/fec4a00b18eeda841c2912b6a84b62b9621889a3",
+                "reference": "fec4a00b18eeda841c2912b6a84b62b9621889a3",
                 "shasum": ""
             },
             "require": {
@@ -3078,7 +3078,7 @@
                     "type": "opencollective"
                 }
             ],
-            "time": "2021-04-19T18:14:45+00:00"
+            "time": "2021-04-24T00:19:02+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
