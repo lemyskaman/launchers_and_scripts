@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee1f1e65b2f7cdccf2f67fcb472f2861",
+    "content-hash": "4c9c0ab339d3479da59d92c4845821c7",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -290,6 +290,52 @@
                 "source": "https://github.com/DASPRiD/Enum/tree/1.0.3"
             },
             "time": "2020-10-02T16:03:48+00:00"
+        },
+        {
+            "name": "datakrama/eloquid",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/datakrama/eloquid.git",
+                "reference": "57263824fe062ad62cddb5439b5c5fdc089619dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/datakrama/eloquid/zipball/57263824fe062ad62cddb5439b5c5fdc089619dc",
+                "reference": "57263824fe062ad62cddb5439b5c5fdc089619dc",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^8.0",
+                "php": "^7.3|^8.0"
+            },
+            "require-dev": {
+                "laravel/legacy-factories": "^1.0.4",
+                "orchestra/testbench": "^6.0",
+                "phpunit/phpunit": "^8.0|^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Datakrama\\Eloquid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ahmad Husen",
+                    "email": "hello@husen.id"
+                }
+            ],
+            "description": "Eloquid - Auto UUID for Eloquent Model",
+            "support": {
+                "issues": "https://github.com/datakrama/eloquid/issues",
+                "source": "https://github.com/datakrama/eloquid/tree/v2.0.0"
+            },
+            "time": "2020-11-04T09:05:59+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -1514,12 +1560,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kamansoft/klorchid.git",
-                "reference": "86f75b8724adb06b1f3d5b63726d282fe07018cd"
+                "reference": "36103fd5365cb7b404997e137a4b913bf69047d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kamansoft/klorchid/zipball/86f75b8724adb06b1f3d5b63726d282fe07018cd",
-                "reference": "86f75b8724adb06b1f3d5b63726d282fe07018cd",
+                "url": "https://api.github.com/repos/kamansoft/klorchid/zipball/36103fd5365cb7b404997e137a4b913bf69047d0",
+                "reference": "36103fd5365cb7b404997e137a4b913bf69047d0",
                 "shasum": ""
             },
             "require": {
@@ -1561,7 +1607,7 @@
                 "issues": "https://github.com/kamansoft/klorchid/issues",
                 "source": "https://github.com/kamansoft/klorchid/tree/lemys_dev"
             },
-            "time": "2021-04-24T09:22:08+00:00"
+            "time": "2021-04-24T15:29:36+00:00"
         },
         {
             "name": "laravel-lang/lang",
