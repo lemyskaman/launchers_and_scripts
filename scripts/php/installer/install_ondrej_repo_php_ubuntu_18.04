@@ -17,9 +17,10 @@ echo "Install needed packages"
 sudo apt install -y curl wget gnupg2 ca-certificates lsb-release apt-transport-https
 
 
+echo "Adding the ondre nginx repository "
+sudo add-apt-repository ppa:ondrej/nginx
 
-
-echo "Adding the SURY repository to your system."
+echo "Adding the Ondre repository to your system."
 sudo add-apt-repository ppa:ondrej/php
 
 
