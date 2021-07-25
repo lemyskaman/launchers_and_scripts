@@ -8,14 +8,20 @@ echo "please pass as param the wanted php version number"
 exit 1
 fi
 
+
+
+
 cd ~
 
 echo "installing mariadb (mysql)"
-echo "adding maria db official repo for ubuntu 20.04"
+echo "adding maria db official repo for debian 10"
 sudo apt-get install software-properties-common dirmngr apt-transport-https
 sudo apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc'
-sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.5/ubuntu focal main'
+sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.5/debian buster main'
 
+
+echo "installing nginx"
+sudo apt-get install nginx
 
 echo  "installing php version:"
 echo $PHP_VERSION
