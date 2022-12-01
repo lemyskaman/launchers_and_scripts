@@ -1,0 +1,6 @@
+#! /bin/bash
+
+
+#you should change the monitor you want by its name after the --output option param
+xrandr --output eDP --scale $1x$1
+
