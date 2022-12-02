@@ -1,0 +1,39 @@
+https://github.com/webmin/webmin/issues/744#issuecomment-621415092
+
+
+Unfortunately there is not much information on how to proxy webmin properly with nginx.
+This is my config on centos 7, it works with any theme without errors.
+In /etc/webmin/config make sure relative_redir=0 or it will give you the problems @PhilPhonic and @mobamoba mentioned before.
+
+referer=www.examle.com
+webprefix=/webmin
+webprefixnoredir=1
+relative_redir=0
+In /etc/miniserv.conf
+
+trust_real_ip=1
+ssl=0
+cookiepath=/webmin
+(trust_real_ip=1 is to show the correct ip in recent logins)
+If nginx is on the same host as webmin you can make it listen only on loopback with this in miniserv.conf:
+
+bind=127.0.0.1
+Your location block should look like this, nothing more.
+With proxy_set_header Host $host; you'll get the login redirect problem!
+
+location /webmin/ { 
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_pass http://localhost:10000/;
+} 
+Make sure you don't have something like this in your server block or the pages will be missing style.
+
+location ~* \.(js|css|ico|png|jpg|jpeg|gif)$ {
+	expires max;
+	add_header Cache-Control public;
+	log_not_found off;
+}
+Clear you browser cache, restart nginx and webmin.
+Hope it helps.
+
+thank you so much for this. I tried all of the various guides out there, but this is the only one that worked. This needs to be followed exactly as it is written or it won't work.
